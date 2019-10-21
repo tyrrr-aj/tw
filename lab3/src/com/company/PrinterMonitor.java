@@ -23,8 +23,9 @@ public class PrinterMonitor {
             }
             catch (InterruptedException e) {};
         }
+        Printer grantedPrinter = avilablePrinters.remove();
         lock.unlock();
-        return avilablePrinters.remove();
+        return grantedPrinter;
     }
 
     public void free(Printer printer) {
