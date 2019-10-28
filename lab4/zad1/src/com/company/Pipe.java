@@ -3,17 +3,19 @@ package com.company;
 import java.util.List;
 
 public class Pipe<T> {
-    private RoundedBuffer<T> buffer;
+    private IBuffer<T> buffer;
     private List<IProcessingUnit<T> > processingUnits; // first Processing Unit should be producer, last - consumer
+    private SemaphoreMatrix semaphoreMatrix;
 
-    public Pipe(List<IProcessingUnit<T> > processingUnits, RoundedBuffer buffer) {
+    public Pipe(List<IProcessingUnit<T> > processingUnits, IBuffer<T> buffer) {
         this.processingUnits = processingUnits;
         this.buffer = buffer;
+        semaphoreMatrix = new SemaphoreMatrix(buffer.size(), processingUnits.size());
     }
 
     public void startProcessing() {
-        for (IProcessingUnit<T> unit : processingUnits) {
-            new ProcessingThread(unit, buffer).start();
+        for (int i = 0; i < processingUnits.size(); i++) {
+            new ProcessingThread(processingUnits.get(i), buffer, semaphoreMatrix, i).start();
         }
     }
 }

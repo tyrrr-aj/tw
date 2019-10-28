@@ -1,31 +1,31 @@
 package com.company;
 
-import java.util.List;
-import java.util.concurrent.Semaphore;
-
 class ProcessingThread<T> extends Thread {
     private IProcessingUnit<T> processingUnit;
-    private RoundedBuffer<T> buffer;
-    private List<Semaphore> mySemaphores;
-    private List<Semaphore> proceedorSemaphores;
+    private IBuffer<T> buffer;
+    private SemaphoreMatrix semaphoreMatrix;
     private int currentElementIndex;
+    private int myID;
 
-    public ProcessingThread(IProcessingUnit<T> processingUnit, RoundedBuffer buffer) {
+    public ProcessingThread(IProcessingUnit<T> processingUnit, IBuffer<T> buffer, SemaphoreMatrix semaphoreMatrix, int ID) {
         this.processingUnit = processingUnit;
         this.buffer = buffer;
         currentElementIndex = 0;
+        this.semaphoreMatrix = semaphoreMatrix;
+        this.myID = ID;
     }
 
     public void run() {
         while (true) {
             try {
-                mySemaphores.get(currentElementIndex).acquire();
-                // TODO modify apropriate element, release appropriate semaphore
+                semaphoreMatrix.getSemaphore(currentElementIndex, myID).acquire();
+                buffer.updateElementAt(currentElementIndex, processingUnit.process(buffer.getDataAt(currentElementIndex)));
+                System.out.printf("[%d] Unit %d: index %d, value %d%n",
+                        System.currentTimeMillis(), myID, currentElementIndex, buffer.getDataAt(currentElementIndex));
+                semaphoreMatrix.getSemaphore(currentElementIndex, semaphoreMatrix.getSuccessorID(myID)).release();
                 currentElementIndex = buffer.getNextIndex(currentElementIndex);
             }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            catch (InterruptedException ignore) { }
         }
     }
 }
