@@ -11,7 +11,7 @@ public class Waiter {
     final private Lock tableLock = new ReentrantLock();
     final private Condition tableFree = tableLock.newCondition();
 
-    private Set<Pair<Integer, Condition> > waitingSingles;
+    private Set<Pair<Integer, Condition> > waitingSingles; // condition - "has partner arrived?"
     private int numberOfPeopleAtTable;
 
     public Waiter() {
