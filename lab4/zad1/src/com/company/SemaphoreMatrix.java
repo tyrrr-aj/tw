@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class SemaphoreMatrix {
+public class SemaphoreMatrix implements ISemaphorsProvider {
     private List <List <Semaphore> > matrix;
 
     public SemaphoreMatrix(int bufferLength, int numberOfProcessingUnits) {
@@ -23,11 +23,15 @@ public class SemaphoreMatrix {
         return row;
     }
 
-    public Semaphore getSemaphore(int elementIndex, int processingUnitIndex) {
+    public Semaphore getMySemaphore(int processingUnitIndex, int elementIndex) {
         return matrix.get(processingUnitIndex).get(elementIndex);
     }
 
-    public int getSuccessorID(int ID) {
+    public Semaphore getSuccessorSemaphore(int processingUnitIndex, int elementIndex) {
+        return matrix.get(getSuccessorID(processingUnitIndex)).get(elementIndex);
+    }
+
+    private int getSuccessorID(int ID) {
         return (ID + 1) % matrix.size();
     }
 }

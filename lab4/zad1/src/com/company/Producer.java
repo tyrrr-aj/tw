@@ -5,11 +5,11 @@ import java.util.Random;
 public class Producer implements IProcessingUnit<Integer> {
     @Override
     public Integer process(Integer input) {
-        Random generator = new Random();
+/*        Random generator = new Random();
         try {
             Thread.sleep(generator.nextInt(3) * 1000);
         }
-        catch (InterruptedException ignore) { }
+        catch (InterruptedException ignore) { }*/
         return 0;
     }
 }

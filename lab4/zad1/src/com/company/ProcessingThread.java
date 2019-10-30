@@ -7,22 +7,21 @@ class ProcessingThread<T> extends Thread {
     private int currentElementIndex;
     private int myID;
 
-    public ProcessingThread(IProcessingUnit<T> processingUnit, IBuffer<T> buffer, SemaphoreMatrix semaphoreMatrix, int ID) {
+    public ProcessingThread(IProcessingUnit<T> processingUnit, IBuffer<T> buffer, int ID) {
         this.processingUnit = processingUnit;
         this.buffer = buffer;
         currentElementIndex = 0;
-        this.semaphoreMatrix = semaphoreMatrix;
         this.myID = ID;
     }
 
     public void run() {
         while (true) {
             try {
-                semaphoreMatrix.getSemaphore(currentElementIndex, myID).acquire();
+                buffer.acquireMySemaphore(myID, currentElementIndex);
                 buffer.updateElementAt(currentElementIndex, processingUnit.process(buffer.getDataAt(currentElementIndex)));
                 System.out.printf("[%d] Unit %d: index %d, value %d%n",
                         System.currentTimeMillis(), myID, currentElementIndex, buffer.getDataAt(currentElementIndex));
-                semaphoreMatrix.getSemaphore(currentElementIndex, semaphoreMatrix.getSuccessorID(myID)).release();
+                buffer.releaseSuccessorSemaphore(myID, currentElementIndex);
                 currentElementIndex = buffer.getNextIndex(currentElementIndex);
             }
             catch (InterruptedException ignore) { }
