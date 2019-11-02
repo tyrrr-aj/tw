@@ -7,21 +7,29 @@ import java.util.concurrent.locks.ReentrantLock;
 public class NaiveCountingBuffer implements ICountingBuffer{
     private int size;
     private int numberOfElements;
+    private long timeLimit;
+    private long startTime;
 
     private final Lock lock = new ReentrantLock();
     private final Condition itemsPut = lock.newCondition();
     private final Condition itemsRemoved = lock.newCondition();
 
-    public NaiveCountingBuffer(int size) {
+    public NaiveCountingBuffer(int size, long timeLimit) {
         this.size = size;
         numberOfElements = 0;
+        this.timeLimit = timeLimit;
+        startTime = System.nanoTime();
     }
 
-    public void put(int quantity) {
+    public Boolean put(int quantity) {
         lock.lock();
         try {
-            while (size - numberOfElements < quantity) {
-                itemsRemoved.await();
+            long nanos = startTime + timeLimit - System.nanoTime();
+            while (numberOfElements < quantity) {
+                if (nanos <= 0L) {
+                    return false;
+                }
+                nanos = itemsPut.awaitNanos(nanos);
             }
             numberOfElements += quantity;
             itemsPut.signalAll();
@@ -32,13 +40,18 @@ public class NaiveCountingBuffer implements ICountingBuffer{
         finally {
             lock.unlock();
         }
+        return true;
     }
 
-    public void get(int quantity) {
+    public Boolean get(int quantity) {
         lock.lock();
         try {
+            long nanos = startTime + timeLimit - System.nanoTime();
             while (numberOfElements < quantity) {
-                itemsPut.await();
+                if (nanos <= 0L) {
+                    return false;
+                }
+                nanos = itemsPut.awaitNanos(nanos);
             }
             numberOfElements -= quantity;
             itemsRemoved.signalAll();
@@ -49,5 +62,6 @@ public class NaiveCountingBuffer implements ICountingBuffer{
         finally {
             lock.unlock();
         }
+        return true;
     }
 }

@@ -5,12 +5,12 @@ public class JustCountingBuffer implements ICountingBuffer {
     private int numberOfElements;
 
     @Override
-    public void put(int quantity) {
-
+    public Boolean put(int quantity) {
+        return false;
     }
 
     @Override
-    public void get(int quantity) {
-
+    public Boolean get(int quantity) {
+        return false;
     }
 }
