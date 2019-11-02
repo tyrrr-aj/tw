@@ -25,7 +25,7 @@ public class NaiveCountingBuffer implements ICountingBuffer{
         lock.lock();
         try {
             long nanos = startTime + timeLimit - System.nanoTime();
-            while (numberOfElements < quantity) {
+            while (size - numberOfElements < quantity) {
                 if (nanos <= 0L) {
                     return false;
                 }

@@ -5,12 +5,14 @@ import java.util.stream.Collectors;
 
 public class SeriesSummarizer {
     private Map<Integer, List<Long> > storedValues;
+    private int bufferSize;
 
-    public SeriesSummarizer() {
+    public SeriesSummarizer(int bufferSize) {
         storedValues = new HashMap<>();
+        this.bufferSize = bufferSize;
     }
 
-    public void addValue(int X, long Y) {
+    public synchronized void addValue(int X, long Y) {
         try {
             storedValues.get(X).add(Y);
         }
@@ -21,9 +23,9 @@ public class SeriesSummarizer {
         }
     }
 
-    public Map<Integer, Long> getMeans() {
+    public Map<Float, Long> getMeans() {
         return storedValues.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> average(e.getValue())));
+                .collect(Collectors.toMap(e -> e.getKey() / (float) bufferSize, e -> average(e.getValue())));
     }
 
     private Long average(List<Long> values) {

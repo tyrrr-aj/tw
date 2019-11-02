@@ -6,7 +6,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        long timeout = 1000000000;
+        long timeout = 2000000000;
 
         Plotter naiveProducersPlotter = new Plotter("Naive: Producers");
         Plotter naiveConsumersPlotter = new Plotter("Naive: Consumers");
@@ -16,8 +16,8 @@ public class Main {
 
                 ICountingBuffer buffer = new NaiveCountingBuffer(bufferSize, timeout);
 
-                SeriesSummarizer producersSummarizer = new SeriesSummarizer();
-                SeriesSummarizer consumersSummarizer = new SeriesSummarizer();
+                SeriesSummarizer producersSummarizer = new SeriesSummarizer(bufferSize);
+                SeriesSummarizer consumersSummarizer = new SeriesSummarizer(bufferSize);
 
                 List<Thread> producersAndConsumers = new ArrayList<>(PCNumber * 2);
 
@@ -47,7 +47,6 @@ public class Main {
                 System.out.printf("Naive: buffer %d, PC %d tested%n", bufferSize, PCNumber);
             }
         }
-
         naiveProducersPlotter.plot();
         naiveConsumersPlotter.plot();
     }
