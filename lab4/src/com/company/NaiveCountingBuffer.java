@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class NaiveCountingBuffer implements ICountingBuffer{
     private int size;
-    private int numberOfElements;
+    private int numberOfElements = 0;
     private long timeLimit;
     private long startTime;
 
@@ -16,11 +16,11 @@ public class NaiveCountingBuffer implements ICountingBuffer{
 
     public NaiveCountingBuffer(int size, long timeLimit) {
         this.size = size;
-        numberOfElements = 0;
         this.timeLimit = timeLimit;
         startTime = System.nanoTime();
     }
 
+    @Override
     public Boolean put(int quantity) {
         lock.lock();
         try {
@@ -43,6 +43,7 @@ public class NaiveCountingBuffer implements ICountingBuffer{
         return true;
     }
 
+    @Override
     public Boolean get(int quantity) {
         lock.lock();
         try {
