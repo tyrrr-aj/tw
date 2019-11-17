@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class MandlebortSquareCallable implements Callable<Map<Coordinates, Integer>> {
+public class MandlebortPartCallable implements Callable<Map<Coordinates, Integer>> {
     private int xMin;
     private int yMin;
     private int xMax;
@@ -12,7 +12,7 @@ public class MandlebortSquareCallable implements Callable<Map<Coordinates, Integ
     private int MAX_ITER;
     private double ZOOM;
 
-    public MandlebortSquareCallable(Coordinates leftUpper, Coordinates rightLower, int MAX_ITER, double ZOOM) {
+    public MandlebortPartCallable(Coordinates leftUpper, Coordinates rightLower, int MAX_ITER, double ZOOM) {
         xMin = leftUpper.X;
         yMin = leftUpper.Y;
         xMax = rightLower.X;
